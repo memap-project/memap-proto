@@ -6,24 +6,40 @@ option go_package = "github.com/memap-project/memap-proto/gen/memapv1/go";
 
 enum CommandType {
   UNKNOWN = 0;
-  SET = 1;
-  GET = 2;
-  DEL = 3;
-  CREATE_NS = 4;
-  DELETE_NS = 5;
-  PING = 6;
+
+  // Namespace commands
+  CREATE_NS = 1;
+  DELETE_NS = 2;
+
+  // key-value commands
+  SET = 3;
+  GET = 4;
+  DEL = 5;
+
+  // hash map commands
+  HGET = 6;
+  HSET = 7;
+  HDEL = 8;
+  HFGET = 9;
+  HFSET = 10;
+  HFDEL = 11;
+
+  // common commands
+  PING = 12;
 }
 
 message Request {
-  CommandType type = 1;
+  CommandType type = 1; 
   string key = 2;
   string value = 3;
-  optional string namespace_name = 4;
-  optional int64 ttl_seconds = 5;
+  string field = 4;
+  string namespace_name = 5;
+  int64 ttl_seconds = 6;
 }
 
 message Response {
   bool success = 1;
   string value = 2;
-  string error_message = 3;
+  map<string, string> hash_value = 3;
+  string error_message = 4;
 }

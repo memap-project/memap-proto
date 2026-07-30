@@ -24,34 +24,56 @@ const (
 type CommandType int32
 
 const (
-	CommandType_UNKNOWN   CommandType = 0
-	CommandType_SET       CommandType = 1
-	CommandType_GET       CommandType = 2
-	CommandType_DEL       CommandType = 3
-	CommandType_CREATE_NS CommandType = 4
-	CommandType_DELETE_NS CommandType = 5
-	CommandType_PING      CommandType = 6
+	CommandType_UNKNOWN CommandType = 0
+	// Namespace commands
+	CommandType_CREATE_NS CommandType = 1
+	CommandType_DELETE_NS CommandType = 2
+	// key-value commands
+	CommandType_SET CommandType = 3
+	CommandType_GET CommandType = 4
+	CommandType_DEL CommandType = 5
+	// hash map commands
+	CommandType_HGET  CommandType = 6
+	CommandType_HSET  CommandType = 7
+	CommandType_HDEL  CommandType = 8
+	CommandType_HFGET CommandType = 9
+	CommandType_HFSET CommandType = 10
+	CommandType_HFDEL CommandType = 11
+	// common commands
+	CommandType_PING CommandType = 12
 )
 
 // Enum value maps for CommandType.
 var (
 	CommandType_name = map[int32]string{
-		0: "UNKNOWN",
-		1: "SET",
-		2: "GET",
-		3: "DEL",
-		4: "CREATE_NS",
-		5: "DELETE_NS",
-		6: "PING",
+		0:  "UNKNOWN",
+		1:  "CREATE_NS",
+		2:  "DELETE_NS",
+		3:  "SET",
+		4:  "GET",
+		5:  "DEL",
+		6:  "HGET",
+		7:  "HSET",
+		8:  "HDEL",
+		9:  "HFGET",
+		10: "HFSET",
+		11: "HFDEL",
+		12: "PING",
 	}
 	CommandType_value = map[string]int32{
 		"UNKNOWN":   0,
-		"SET":       1,
-		"GET":       2,
-		"DEL":       3,
-		"CREATE_NS": 4,
-		"DELETE_NS": 5,
-		"PING":      6,
+		"CREATE_NS": 1,
+		"DELETE_NS": 2,
+		"SET":       3,
+		"GET":       4,
+		"DEL":       5,
+		"HGET":      6,
+		"HSET":      7,
+		"HDEL":      8,
+		"HFGET":     9,
+		"HFSET":     10,
+		"HFDEL":     11,
+		"PING":      12,
 	}
 )
 
@@ -87,8 +109,9 @@ type Request struct {
 	Type          CommandType            `protobuf:"varint,1,opt,name=type,proto3,enum=proto.CommandType" json:"type,omitempty"`
 	Key           string                 `protobuf:"bytes,2,opt,name=key,proto3" json:"key,omitempty"`
 	Value         string                 `protobuf:"bytes,3,opt,name=value,proto3" json:"value,omitempty"`
-	NamespaceName *string                `protobuf:"bytes,4,opt,name=namespace_name,json=namespaceName,proto3,oneof" json:"namespace_name,omitempty"`
-	TtlSeconds    *int64                 `protobuf:"varint,5,opt,name=ttl_seconds,json=ttlSeconds,proto3,oneof" json:"ttl_seconds,omitempty"`
+	Field         string                 `protobuf:"bytes,4,opt,name=field,proto3" json:"field,omitempty"`
+	NamespaceName string                 `protobuf:"bytes,5,opt,name=namespace_name,json=namespaceName,proto3" json:"namespace_name,omitempty"`
+	TtlSeconds    int64                  `protobuf:"varint,6,opt,name=ttl_seconds,json=ttlSeconds,proto3" json:"ttl_seconds,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -144,16 +167,23 @@ func (x *Request) GetValue() string {
 	return ""
 }
 
+func (x *Request) GetField() string {
+	if x != nil {
+		return x.Field
+	}
+	return ""
+}
+
 func (x *Request) GetNamespaceName() string {
-	if x != nil && x.NamespaceName != nil {
-		return *x.NamespaceName
+	if x != nil {
+		return x.NamespaceName
 	}
 	return ""
 }
 
 func (x *Request) GetTtlSeconds() int64 {
-	if x != nil && x.TtlSeconds != nil {
-		return *x.TtlSeconds
+	if x != nil {
+		return x.TtlSeconds
 	}
 	return 0
 }
@@ -162,7 +192,8 @@ type Response struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
 	Value         string                 `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
-	ErrorMessage  string                 `protobuf:"bytes,3,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
+	HashValue     map[string]string      `protobuf:"bytes,3,rep,name=hash_value,json=hashValue,proto3" json:"hash_value,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	ErrorMessage  string                 `protobuf:"bytes,4,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -211,6 +242,13 @@ func (x *Response) GetValue() string {
 	return ""
 }
 
+func (x *Response) GetHashValue() map[string]string {
+	if x != nil {
+		return x.HashValue
+	}
+	return nil
+}
+
 func (x *Response) GetErrorMessage() string {
 	if x != nil {
 		return x.ErrorMessage
@@ -222,28 +260,39 @@ var File_memap_proto protoreflect.FileDescriptor
 
 const file_memap_proto_rawDesc = "" +
 	"\n" +
-	"\vmemap.proto\x12\x05proto\"\xce\x01\n" +
+	"\vmemap.proto\x12\x05proto\"\xb7\x01\n" +
 	"\aRequest\x12&\n" +
 	"\x04type\x18\x01 \x01(\x0e2\x12.proto.CommandTypeR\x04type\x12\x10\n" +
 	"\x03key\x18\x02 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x03 \x01(\tR\x05value\x12*\n" +
-	"\x0enamespace_name\x18\x04 \x01(\tH\x00R\rnamespaceName\x88\x01\x01\x12$\n" +
-	"\vttl_seconds\x18\x05 \x01(\x03H\x01R\n" +
-	"ttlSeconds\x88\x01\x01B\x11\n" +
-	"\x0f_namespace_nameB\x0e\n" +
-	"\f_ttl_seconds\"_\n" +
+	"\x05value\x18\x03 \x01(\tR\x05value\x12\x14\n" +
+	"\x05field\x18\x04 \x01(\tR\x05field\x12%\n" +
+	"\x0enamespace_name\x18\x05 \x01(\tR\rnamespaceName\x12\x1f\n" +
+	"\vttl_seconds\x18\x06 \x01(\x03R\n" +
+	"ttlSeconds\"\xdc\x01\n" +
 	"\bResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value\x12#\n" +
-	"\rerror_message\x18\x03 \x01(\tR\ferrorMessage*]\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value\x12=\n" +
+	"\n" +
+	"hash_value\x18\x03 \x03(\v2\x1e.proto.Response.HashValueEntryR\thashValue\x12#\n" +
+	"\rerror_message\x18\x04 \x01(\tR\ferrorMessage\x1a<\n" +
+	"\x0eHashValueEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01*\x9c\x01\n" +
 	"\vCommandType\x12\v\n" +
-	"\aUNKNOWN\x10\x00\x12\a\n" +
-	"\x03SET\x10\x01\x12\a\n" +
-	"\x03GET\x10\x02\x12\a\n" +
-	"\x03DEL\x10\x03\x12\r\n" +
-	"\tCREATE_NS\x10\x04\x12\r\n" +
-	"\tDELETE_NS\x10\x05\x12\b\n" +
-	"\x04PING\x10\x06B5Z3github.com/memap-project/memap-proto/gen/memapv1/gob\x06proto3"
+	"\aUNKNOWN\x10\x00\x12\r\n" +
+	"\tCREATE_NS\x10\x01\x12\r\n" +
+	"\tDELETE_NS\x10\x02\x12\a\n" +
+	"\x03SET\x10\x03\x12\a\n" +
+	"\x03GET\x10\x04\x12\a\n" +
+	"\x03DEL\x10\x05\x12\b\n" +
+	"\x04HGET\x10\x06\x12\b\n" +
+	"\x04HSET\x10\a\x12\b\n" +
+	"\x04HDEL\x10\b\x12\t\n" +
+	"\x05HFGET\x10\t\x12\t\n" +
+	"\x05HFSET\x10\n" +
+	"\x12\t\n" +
+	"\x05HFDEL\x10\v\x12\b\n" +
+	"\x04PING\x10\fB5Z3github.com/memap-project/memap-proto/gen/memapv1/gob\x06proto3"
 
 var (
 	file_memap_proto_rawDescOnce sync.Once
@@ -258,19 +307,21 @@ func file_memap_proto_rawDescGZIP() []byte {
 }
 
 var file_memap_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_memap_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_memap_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_memap_proto_goTypes = []any{
 	(CommandType)(0), // 0: proto.CommandType
 	(*Request)(nil),  // 1: proto.Request
 	(*Response)(nil), // 2: proto.Response
+	nil,              // 3: proto.Response.HashValueEntry
 }
 var file_memap_proto_depIdxs = []int32{
 	0, // 0: proto.Request.type:type_name -> proto.CommandType
-	1, // [1:1] is the sub-list for method output_type
-	1, // [1:1] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	3, // 1: proto.Response.hash_value:type_name -> proto.Response.HashValueEntry
+	2, // [2:2] is the sub-list for method output_type
+	2, // [2:2] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_memap_proto_init() }
@@ -278,14 +329,13 @@ func file_memap_proto_init() {
 	if File_memap_proto != nil {
 		return
 	}
-	file_memap_proto_msgTypes[0].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_memap_proto_rawDesc), len(file_memap_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   2,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
