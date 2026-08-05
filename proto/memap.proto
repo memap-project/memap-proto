@@ -15,21 +15,23 @@ enum CommandType {
   SET = 3;
   GET = 4;
   DEL = 5;
+  EXPIRE = 6;
 
   // hash map commands
-  HGET = 6;
-  HSET = 7;
-  HDEL = 8;
-  HFGET = 9;
-  HFSET = 10;
-  HFDEL = 11;
+  HGET = 7;
+  HSET = 8;
+  HDEL = 9;
+  HEXPIRE = 10;
+  HFGET = 11;
+  HFSET = 12;
+  HFDEL = 13;
 
   // common commands
-  PING = 12;
+  PING = 14;
 }
 
 message Request {
-  CommandType type = 1; 
+  CommandType type = 1;
   string key = 2;
   string value = 3;
   string field = 4;

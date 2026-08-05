@@ -29,18 +29,20 @@ const (
 	CommandType_CREATE_NS CommandType = 1
 	CommandType_DELETE_NS CommandType = 2
 	// key-value commands
-	CommandType_SET CommandType = 3
-	CommandType_GET CommandType = 4
-	CommandType_DEL CommandType = 5
+	CommandType_SET    CommandType = 3
+	CommandType_GET    CommandType = 4
+	CommandType_DEL    CommandType = 5
+	CommandType_EXPIRE CommandType = 6
 	// hash map commands
-	CommandType_HGET  CommandType = 6
-	CommandType_HSET  CommandType = 7
-	CommandType_HDEL  CommandType = 8
-	CommandType_HFGET CommandType = 9
-	CommandType_HFSET CommandType = 10
-	CommandType_HFDEL CommandType = 11
+	CommandType_HGET    CommandType = 7
+	CommandType_HSET    CommandType = 8
+	CommandType_HDEL    CommandType = 9
+	CommandType_HEXPIRE CommandType = 10
+	CommandType_HFGET   CommandType = 11
+	CommandType_HFSET   CommandType = 12
+	CommandType_HFDEL   CommandType = 13
 	// common commands
-	CommandType_PING CommandType = 12
+	CommandType_PING CommandType = 14
 )
 
 // Enum value maps for CommandType.
@@ -52,13 +54,15 @@ var (
 		3:  "SET",
 		4:  "GET",
 		5:  "DEL",
-		6:  "HGET",
-		7:  "HSET",
-		8:  "HDEL",
-		9:  "HFGET",
-		10: "HFSET",
-		11: "HFDEL",
-		12: "PING",
+		6:  "EXPIRE",
+		7:  "HGET",
+		8:  "HSET",
+		9:  "HDEL",
+		10: "HEXPIRE",
+		11: "HFGET",
+		12: "HFSET",
+		13: "HFDEL",
+		14: "PING",
 	}
 	CommandType_value = map[string]int32{
 		"UNKNOWN":   0,
@@ -67,13 +71,15 @@ var (
 		"SET":       3,
 		"GET":       4,
 		"DEL":       5,
-		"HGET":      6,
-		"HSET":      7,
-		"HDEL":      8,
-		"HFGET":     9,
-		"HFSET":     10,
-		"HFDEL":     11,
-		"PING":      12,
+		"EXPIRE":    6,
+		"HGET":      7,
+		"HSET":      8,
+		"HDEL":      9,
+		"HEXPIRE":   10,
+		"HFGET":     11,
+		"HFSET":     12,
+		"HFDEL":     13,
+		"PING":      14,
 	}
 )
 
@@ -277,22 +283,25 @@ const file_memap_proto_rawDesc = "" +
 	"\rerror_message\x18\x04 \x01(\tR\ferrorMessage\x1a<\n" +
 	"\x0eHashValueEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01*\x9c\x01\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01*\xb5\x01\n" +
 	"\vCommandType\x12\v\n" +
 	"\aUNKNOWN\x10\x00\x12\r\n" +
 	"\tCREATE_NS\x10\x01\x12\r\n" +
 	"\tDELETE_NS\x10\x02\x12\a\n" +
 	"\x03SET\x10\x03\x12\a\n" +
 	"\x03GET\x10\x04\x12\a\n" +
-	"\x03DEL\x10\x05\x12\b\n" +
-	"\x04HGET\x10\x06\x12\b\n" +
-	"\x04HSET\x10\a\x12\b\n" +
-	"\x04HDEL\x10\b\x12\t\n" +
-	"\x05HFGET\x10\t\x12\t\n" +
-	"\x05HFSET\x10\n" +
+	"\x03DEL\x10\x05\x12\n" +
+	"\n" +
+	"\x06EXPIRE\x10\x06\x12\b\n" +
+	"\x04HGET\x10\a\x12\b\n" +
+	"\x04HSET\x10\b\x12\b\n" +
+	"\x04HDEL\x10\t\x12\v\n" +
+	"\aHEXPIRE\x10\n" +
 	"\x12\t\n" +
-	"\x05HFDEL\x10\v\x12\b\n" +
-	"\x04PING\x10\fB5Z3github.com/memap-project/memap-proto/gen/memapv1/gob\x06proto3"
+	"\x05HFGET\x10\v\x12\t\n" +
+	"\x05HFSET\x10\f\x12\t\n" +
+	"\x05HFDEL\x10\r\x12\b\n" +
+	"\x04PING\x10\x0eB5Z3github.com/memap-project/memap-proto/gen/memapv1/gob\x06proto3"
 
 var (
 	file_memap_proto_rawDescOnce sync.Once
