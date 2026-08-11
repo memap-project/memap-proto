@@ -1,4 +1,4 @@
-module github.com/dmi3midd/memap-proto
+module github.com/memap-project/memap-proto
 
 go 1.26.5
 
