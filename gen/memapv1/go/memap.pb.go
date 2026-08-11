@@ -24,39 +24,29 @@ const (
 type CommandType int32
 
 const (
-	CommandType_UNKNOWN CommandType = 0
-	// Creates namespace if not exists
+	CommandType_UNKNOWN   CommandType = 0
 	CommandType_CREATE_NS CommandType = 1
-	// Deletes namespace if exists
 	CommandType_DELETE_NS CommandType = 2
-	// Deletes all namespaces and keys
-	CommandType_ERASE CommandType = 3
-	// Deletes all keys
-	CommandType_FLUSH CommandType = 4
-	// Sets key-value pair
-	CommandType_SET CommandType = 5
-	// Gets value by key
-	CommandType_GET CommandType = 6
-	// Deletes key
-	CommandType_DEL CommandType = 7
-	// Sets expiration time for key
-	CommandType_EXPIRE CommandType = 8
-	// Sets field-value pair in hash
-	CommandType_HSET CommandType = 9
-	// Gets value by field in hash
-	CommandType_HGET CommandType = 10
-	// Deletes field in hash
-	CommandType_HDEL CommandType = 11
-	// Sets expiration time for hash
-	CommandType_HEXPIRE CommandType = 12
-	// Gets field-value pair in hash field
-	CommandType_HFGET CommandType = 13
-	// Sets field-value pair in hash field
-	CommandType_HFSET CommandType = 14
-	// Deletes field in hash field
-	CommandType_HFDEL CommandType = 15
-	// Checks if server is alive
-	CommandType_PING CommandType = 16
+	CommandType_ERASE     CommandType = 3
+	CommandType_FLUSH     CommandType = 4
+	CommandType_GET       CommandType = 5
+	CommandType_SET       CommandType = 6
+	CommandType_DEL       CommandType = 7
+	CommandType_EXPIRE    CommandType = 8
+	CommandType_TTL       CommandType = 9
+	CommandType_HGET      CommandType = 10
+	CommandType_HSET      CommandType = 11
+	CommandType_HDEL      CommandType = 12
+	CommandType_HEXPIRE   CommandType = 13
+	CommandType_HTTL      CommandType = 14
+	CommandType_HEXIST    CommandType = 15
+	CommandType_HLEN      CommandType = 16
+	CommandType_HKEYS     CommandType = 17
+	CommandType_HVALS     CommandType = 18
+	CommandType_HFGET     CommandType = 19
+	CommandType_HFSET     CommandType = 20
+	CommandType_HFDEL     CommandType = 21
+	CommandType_PING      CommandType = 22
 )
 
 // Enum value maps for CommandType.
@@ -67,18 +57,24 @@ var (
 		2:  "DELETE_NS",
 		3:  "ERASE",
 		4:  "FLUSH",
-		5:  "SET",
-		6:  "GET",
+		5:  "GET",
+		6:  "SET",
 		7:  "DEL",
 		8:  "EXPIRE",
-		9:  "HSET",
+		9:  "TTL",
 		10: "HGET",
-		11: "HDEL",
-		12: "HEXPIRE",
-		13: "HFGET",
-		14: "HFSET",
-		15: "HFDEL",
-		16: "PING",
+		11: "HSET",
+		12: "HDEL",
+		13: "HEXPIRE",
+		14: "HTTL",
+		15: "HEXIST",
+		16: "HLEN",
+		17: "HKEYS",
+		18: "HVALS",
+		19: "HFGET",
+		20: "HFSET",
+		21: "HFDEL",
+		22: "PING",
 	}
 	CommandType_value = map[string]int32{
 		"UNKNOWN":   0,
@@ -86,18 +82,24 @@ var (
 		"DELETE_NS": 2,
 		"ERASE":     3,
 		"FLUSH":     4,
-		"SET":       5,
-		"GET":       6,
+		"GET":       5,
+		"SET":       6,
 		"DEL":       7,
 		"EXPIRE":    8,
-		"HSET":      9,
+		"TTL":       9,
 		"HGET":      10,
-		"HDEL":      11,
-		"HEXPIRE":   12,
-		"HFGET":     13,
-		"HFSET":     14,
-		"HFDEL":     15,
-		"PING":      16,
+		"HSET":      11,
+		"HDEL":      12,
+		"HEXPIRE":   13,
+		"HTTL":      14,
+		"HEXIST":    15,
+		"HLEN":      16,
+		"HKEYS":     17,
+		"HVALS":     18,
+		"HFGET":     19,
+		"HFSET":     20,
+		"HFDEL":     21,
+		"PING":      22,
 	}
 )
 
@@ -217,7 +219,9 @@ type Response struct {
 	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
 	Value         string                 `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
 	HashValue     map[string]string      `protobuf:"bytes,3,rep,name=hash_value,json=hashValue,proto3" json:"hash_value,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	ErrorMessage  string                 `protobuf:"bytes,4,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
+	ListValues    []string               `protobuf:"bytes,4,rep,name=list_values,json=listValues,proto3" json:"list_values,omitempty"`
+	IntValue      int64                  `protobuf:"varint,5,opt,name=int_value,json=intValue,proto3" json:"int_value,omitempty"`
+	ErrorMessage  string                 `protobuf:"bytes,6,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -273,6 +277,20 @@ func (x *Response) GetHashValue() map[string]string {
 	return nil
 }
 
+func (x *Response) GetListValues() []string {
+	if x != nil {
+		return x.ListValues
+	}
+	return nil
+}
+
+func (x *Response) GetIntValue() int64 {
+	if x != nil {
+		return x.IntValue
+	}
+	return 0
+}
+
 func (x *Response) GetErrorMessage() string {
 	if x != nil {
 		return x.ErrorMessage
@@ -292,36 +310,46 @@ const file_memap_proto_rawDesc = "" +
 	"\x05field\x18\x04 \x01(\tR\x05field\x12%\n" +
 	"\x0enamespace_name\x18\x05 \x01(\tR\rnamespaceName\x12\x1f\n" +
 	"\vttl_seconds\x18\x06 \x01(\x03R\n" +
-	"ttlSeconds\"\xdc\x01\n" +
+	"ttlSeconds\"\x9a\x02\n" +
 	"\bResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value\x12=\n" +
 	"\n" +
-	"hash_value\x18\x03 \x03(\v2\x1e.proto.Response.HashValueEntryR\thashValue\x12#\n" +
-	"\rerror_message\x18\x04 \x01(\tR\ferrorMessage\x1a<\n" +
+	"hash_value\x18\x03 \x03(\v2\x1e.proto.Response.HashValueEntryR\thashValue\x12\x1f\n" +
+	"\vlist_values\x18\x04 \x03(\tR\n" +
+	"listValues\x12\x1b\n" +
+	"\tint_value\x18\x05 \x01(\x03R\bintValue\x12#\n" +
+	"\rerror_message\x18\x06 \x01(\tR\ferrorMessage\x1a<\n" +
 	"\x0eHashValueEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01*\xcb\x01\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01*\x8a\x02\n" +
 	"\vCommandType\x12\v\n" +
 	"\aUNKNOWN\x10\x00\x12\r\n" +
 	"\tCREATE_NS\x10\x01\x12\r\n" +
 	"\tDELETE_NS\x10\x02\x12\t\n" +
 	"\x05ERASE\x10\x03\x12\t\n" +
 	"\x05FLUSH\x10\x04\x12\a\n" +
-	"\x03SET\x10\x05\x12\a\n" +
-	"\x03GET\x10\x06\x12\a\n" +
+	"\x03GET\x10\x05\x12\a\n" +
+	"\x03SET\x10\x06\x12\a\n" +
 	"\x03DEL\x10\a\x12\n" +
 	"\n" +
-	"\x06EXPIRE\x10\b\x12\b\n" +
-	"\x04HSET\x10\t\x12\b\n" +
+	"\x06EXPIRE\x10\b\x12\a\n" +
+	"\x03TTL\x10\t\x12\b\n" +
 	"\x04HGET\x10\n" +
 	"\x12\b\n" +
-	"\x04HDEL\x10\v\x12\v\n" +
-	"\aHEXPIRE\x10\f\x12\t\n" +
-	"\x05HFGET\x10\r\x12\t\n" +
-	"\x05HFSET\x10\x0e\x12\t\n" +
-	"\x05HFDEL\x10\x0f\x12\b\n" +
-	"\x04PING\x10\x10B5Z3github.com/memap-project/memap-proto/gen/memapv1/gob\x06proto3"
+	"\x04HSET\x10\v\x12\b\n" +
+	"\x04HDEL\x10\f\x12\v\n" +
+	"\aHEXPIRE\x10\r\x12\b\n" +
+	"\x04HTTL\x10\x0e\x12\n" +
+	"\n" +
+	"\x06HEXIST\x10\x0f\x12\b\n" +
+	"\x04HLEN\x10\x10\x12\t\n" +
+	"\x05HKEYS\x10\x11\x12\t\n" +
+	"\x05HVALS\x10\x12\x12\t\n" +
+	"\x05HFGET\x10\x13\x12\t\n" +
+	"\x05HFSET\x10\x14\x12\t\n" +
+	"\x05HFDEL\x10\x15\x12\b\n" +
+	"\x04PING\x10\x16B5Z3github.com/memap-project/memap-proto/gen/memapv1/gob\x06proto3"
 
 var (
 	file_memap_proto_rawDescOnce sync.Once

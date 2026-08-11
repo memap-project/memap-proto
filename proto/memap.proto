@@ -6,42 +6,33 @@ option go_package = "github.com/memap-project/memap-proto/gen/memapv1/go";
 
 enum CommandType {
   UNKNOWN = 0;
-  
-  // Creates namespace if not exists
+
   CREATE_NS = 1;
-  // Deletes namespace if exists
   DELETE_NS = 2;
-  // Deletes all namespaces and keys
   ERASE = 3;
-  // Deletes all keys
   FLUSH = 4;
 
-  // Sets key-value pair
-  SET = 5;
-  // Gets value by key
-  GET = 6;
-  // Deletes key
+  GET = 5;
+  SET = 6;
   DEL = 7;
-  // Sets expiration time for key
   EXPIRE = 8;
+  TTL = 9;
 
-  // Sets field-value pair in hash
-  HSET = 9;
-  // Gets value by field in hash
   HGET = 10;
-  // Deletes field in hash
-  HDEL = 11;
-  // Sets expiration time for hash
-  HEXPIRE = 12;
-  // Gets field-value pair in hash field
-  HFGET = 13;
-  // Sets field-value pair in hash field
-  HFSET = 14;
-  // Deletes field in hash field
-  HFDEL = 15;
+  HSET = 11;
+  HDEL = 12;
+  HEXPIRE = 13;
+  HTTL = 14;
+  HEXIST = 15;
+  HLEN = 16;
+  HKEYS = 17;
+  HVALS = 18;
 
-  // Checks if server is alive
-  PING = 16;
+  HFGET = 19;
+  HFSET = 20;
+  HFDEL = 21;
+
+  PING = 22;
 }
 
 message Request {
@@ -57,5 +48,7 @@ message Response {
   bool success = 1;
   string value = 2;
   map<string, string> hash_value = 3;
-  string error_message = 4;
+  repeated string list_values = 4;
+  int64 int_value = 5;
+  string error_message = 6;
 }
