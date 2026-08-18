@@ -162,10 +162,11 @@ type Request struct {
 	Command       CommandType            `protobuf:"varint,1,opt,name=command,proto3,enum=proto.CommandType" json:"command,omitempty"`
 	Namespace     string                 `protobuf:"bytes,2,opt,name=namespace,proto3" json:"namespace,omitempty"`
 	Key           string                 `protobuf:"bytes,3,opt,name=key,proto3" json:"key,omitempty"`
-	Value         string                 `protobuf:"bytes,4,opt,name=value,proto3" json:"value,omitempty"`
-	Field         string                 `protobuf:"bytes,5,opt,name=field,proto3" json:"field,omitempty"`
-	Ttl           int64                  `protobuf:"varint,6,opt,name=ttl,proto3" json:"ttl,omitempty"`
-	Limit         int64                  `protobuf:"varint,7,opt,name=limit,proto3" json:"limit,omitempty"`
+	StringValue   string                 `protobuf:"bytes,4,opt,name=string_value,json=stringValue,proto3" json:"string_value,omitempty"`
+	IntValue      int64                  `protobuf:"varint,5,opt,name=int_value,json=intValue,proto3" json:"int_value,omitempty"`
+	Field         string                 `protobuf:"bytes,6,opt,name=field,proto3" json:"field,omitempty"`
+	Ttl           int64                  `protobuf:"varint,7,opt,name=ttl,proto3" json:"ttl,omitempty"`
+	Limit         int64                  `protobuf:"varint,8,opt,name=limit,proto3" json:"limit,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -221,11 +222,18 @@ func (x *Request) GetKey() string {
 	return ""
 }
 
-func (x *Request) GetValue() string {
+func (x *Request) GetStringValue() string {
 	if x != nil {
-		return x.Value
+		return x.StringValue
 	}
 	return ""
+}
+
+func (x *Request) GetIntValue() int64 {
+	if x != nil {
+		return x.IntValue
+	}
+	return 0
 }
 
 func (x *Request) GetField() string {
@@ -253,8 +261,8 @@ type Response struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
 	StringValue   string                 `protobuf:"bytes,2,opt,name=string_value,json=stringValue,proto3" json:"string_value,omitempty"`
-	HashValue     map[string]string      `protobuf:"bytes,3,rep,name=hash_value,json=hashValue,proto3" json:"hash_value,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	ListValues    []string               `protobuf:"bytes,4,rep,name=list_values,json=listValues,proto3" json:"list_values,omitempty"`
+	MapValue      map[string]string      `protobuf:"bytes,3,rep,name=map_value,json=mapValue,proto3" json:"map_value,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	SliceValue    []string               `protobuf:"bytes,4,rep,name=slice_value,json=sliceValue,proto3" json:"slice_value,omitempty"`
 	IntValue      int64                  `protobuf:"varint,5,opt,name=int_value,json=intValue,proto3" json:"int_value,omitempty"`
 	Error         string                 `protobuf:"bytes,6,opt,name=error,proto3" json:"error,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -305,16 +313,16 @@ func (x *Response) GetStringValue() string {
 	return ""
 }
 
-func (x *Response) GetHashValue() map[string]string {
+func (x *Response) GetMapValue() map[string]string {
 	if x != nil {
-		return x.HashValue
+		return x.MapValue
 	}
 	return nil
 }
 
-func (x *Response) GetListValues() []string {
+func (x *Response) GetSliceValue() []string {
 	if x != nil {
-		return x.ListValues
+		return x.SliceValue
 	}
 	return nil
 }
@@ -337,25 +345,25 @@ var File_memap_proto protoreflect.FileDescriptor
 
 const file_memap_proto_rawDesc = "" +
 	"\n" +
-	"\vmemap.proto\x12\x05proto\"\xbb\x01\n" +
+	"\vmemap.proto\x12\x05proto\"\xe5\x01\n" +
 	"\aRequest\x12,\n" +
 	"\acommand\x18\x01 \x01(\x0e2\x12.proto.CommandTypeR\acommand\x12\x1c\n" +
 	"\tnamespace\x18\x02 \x01(\tR\tnamespace\x12\x10\n" +
-	"\x03key\x18\x03 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x04 \x01(\tR\x05value\x12\x14\n" +
-	"\x05field\x18\x05 \x01(\tR\x05field\x12\x10\n" +
-	"\x03ttl\x18\x06 \x01(\x03R\x03ttl\x12\x14\n" +
-	"\x05limit\x18\a \x01(\x03R\x05limit\"\x98\x02\n" +
+	"\x03key\x18\x03 \x01(\tR\x03key\x12!\n" +
+	"\fstring_value\x18\x04 \x01(\tR\vstringValue\x12\x1b\n" +
+	"\tint_value\x18\x05 \x01(\x03R\bintValue\x12\x14\n" +
+	"\x05field\x18\x06 \x01(\tR\x05field\x12\x10\n" +
+	"\x03ttl\x18\a \x01(\x03R\x03ttl\x12\x14\n" +
+	"\x05limit\x18\b \x01(\x03R\x05limit\"\x94\x02\n" +
 	"\bResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12!\n" +
-	"\fstring_value\x18\x02 \x01(\tR\vstringValue\x12=\n" +
-	"\n" +
-	"hash_value\x18\x03 \x03(\v2\x1e.proto.Response.HashValueEntryR\thashValue\x12\x1f\n" +
-	"\vlist_values\x18\x04 \x03(\tR\n" +
-	"listValues\x12\x1b\n" +
+	"\fstring_value\x18\x02 \x01(\tR\vstringValue\x12:\n" +
+	"\tmap_value\x18\x03 \x03(\v2\x1d.proto.Response.MapValueEntryR\bmapValue\x12\x1f\n" +
+	"\vslice_value\x18\x04 \x03(\tR\n" +
+	"sliceValue\x12\x1b\n" +
 	"\tint_value\x18\x05 \x01(\x03R\bintValue\x12\x14\n" +
-	"\x05error\x18\x06 \x01(\tR\x05error\x1a<\n" +
-	"\x0eHashValueEntry\x12\x10\n" +
+	"\x05error\x18\x06 \x01(\tR\x05error\x1a;\n" +
+	"\rMapValueEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01*\xe8\x02\n" +
 	"\vCommandType\x12\v\n" +
@@ -418,11 +426,11 @@ var file_memap_proto_goTypes = []any{
 	(CommandType)(0), // 0: proto.CommandType
 	(*Request)(nil),  // 1: proto.Request
 	(*Response)(nil), // 2: proto.Response
-	nil,              // 3: proto.Response.HashValueEntry
+	nil,              // 3: proto.Response.MapValueEntry
 }
 var file_memap_proto_depIdxs = []int32{
 	0, // 0: proto.Request.command:type_name -> proto.CommandType
-	3, // 1: proto.Response.hash_value:type_name -> proto.Response.HashValueEntry
+	3, // 1: proto.Response.map_value:type_name -> proto.Response.MapValueEntry
 	2, // [2:2] is the sub-list for method output_type
 	2, // [2:2] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name

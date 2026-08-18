@@ -49,17 +49,18 @@ message Request {
   CommandType command = 1;
   string namespace = 2;
   string key = 3;
-  string value = 4;
-  string field = 5;
-  int64 ttl = 6;
-  int64 limit = 7;
+  string string_value = 4;
+  int64 int_value = 5;
+  string field = 6;
+  int64 ttl = 7;
+  int64 limit = 8;
 }
 
 message Response {
   bool success = 1;
   string string_value = 2;
-  map<string, string> hash_value = 3;
-  repeated string list_values = 4;
+  map<string, string> map_value = 3;
+  repeated string slice_value = 4;
   int64 int_value = 5;
   string error = 6;
 }
