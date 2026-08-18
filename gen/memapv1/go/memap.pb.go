@@ -24,37 +24,46 @@ const (
 type CommandType int32
 
 const (
-	CommandType_UNKNOWN   CommandType = 0
-	CommandType_CREATE_NS CommandType = 1
-	CommandType_DELETE_NS CommandType = 2
-	CommandType_ERASE     CommandType = 3
-	CommandType_FLUSH     CommandType = 4
-	CommandType_GET       CommandType = 5
-	CommandType_SET       CommandType = 6
-	CommandType_DEL       CommandType = 7
-	CommandType_EXPIRE    CommandType = 8
-	CommandType_TTL       CommandType = 9
-	CommandType_HGET      CommandType = 10
-	CommandType_HSET      CommandType = 11
-	CommandType_HDEL      CommandType = 12
-	CommandType_HEXPIRE   CommandType = 13
-	CommandType_HTTL      CommandType = 14
-	CommandType_HEXIST    CommandType = 15
-	CommandType_HLEN      CommandType = 16
-	CommandType_HKEYS     CommandType = 17
-	CommandType_HVALS     CommandType = 18
-	CommandType_HFGET     CommandType = 19
-	CommandType_HFSET     CommandType = 20
-	CommandType_HFDEL     CommandType = 21
-	CommandType_PING      CommandType = 22
+	CommandType_UNKNOWN CommandType = 0
+	CommandType_CREATE  CommandType = 1
+	CommandType_DROP    CommandType = 2
+	CommandType_ERASE   CommandType = 3
+	CommandType_FLUSH   CommandType = 4
+	CommandType_GET     CommandType = 5
+	CommandType_SET     CommandType = 6
+	CommandType_DEL     CommandType = 7
+	CommandType_EXPIRE  CommandType = 8
+	CommandType_TTL     CommandType = 9
+	CommandType_HGET    CommandType = 10
+	CommandType_HSET    CommandType = 11
+	CommandType_HDEL    CommandType = 12
+	CommandType_HEXPIRE CommandType = 13
+	CommandType_HTTL    CommandType = 14
+	CommandType_HEXIST  CommandType = 15
+	CommandType_HLEN    CommandType = 16
+	CommandType_HKEYS   CommandType = 17
+	CommandType_HVALS   CommandType = 18
+	CommandType_HFGET   CommandType = 19
+	CommandType_HFSET   CommandType = 20
+	CommandType_HFDEL   CommandType = 21
+	CommandType_CINIT   CommandType = 23
+	CommandType_SLIMIT  CommandType = 24
+	CommandType_GLIMIT  CommandType = 25
+	CommandType_CGET    CommandType = 26
+	CommandType_CDEL    CommandType = 27
+	CommandType_CEXPIRE CommandType = 28
+	CommandType_CTTL    CommandType = 29
+	CommandType_INCRBY  CommandType = 30
+	CommandType_DECRBY  CommandType = 31
+	CommandType_PING    CommandType = 32
 )
 
 // Enum value maps for CommandType.
 var (
 	CommandType_name = map[int32]string{
 		0:  "UNKNOWN",
-		1:  "CREATE_NS",
-		2:  "DELETE_NS",
+		1:  "CREATE",
+		2:  "DROP",
 		3:  "ERASE",
 		4:  "FLUSH",
 		5:  "GET",
@@ -74,32 +83,50 @@ var (
 		19: "HFGET",
 		20: "HFSET",
 		21: "HFDEL",
-		22: "PING",
+		23: "CINIT",
+		24: "SLIMIT",
+		25: "GLIMIT",
+		26: "CGET",
+		27: "CDEL",
+		28: "CEXPIRE",
+		29: "CTTL",
+		30: "INCRBY",
+		31: "DECRBY",
+		32: "PING",
 	}
 	CommandType_value = map[string]int32{
-		"UNKNOWN":   0,
-		"CREATE_NS": 1,
-		"DELETE_NS": 2,
-		"ERASE":     3,
-		"FLUSH":     4,
-		"GET":       5,
-		"SET":       6,
-		"DEL":       7,
-		"EXPIRE":    8,
-		"TTL":       9,
-		"HGET":      10,
-		"HSET":      11,
-		"HDEL":      12,
-		"HEXPIRE":   13,
-		"HTTL":      14,
-		"HEXIST":    15,
-		"HLEN":      16,
-		"HKEYS":     17,
-		"HVALS":     18,
-		"HFGET":     19,
-		"HFSET":     20,
-		"HFDEL":     21,
-		"PING":      22,
+		"UNKNOWN": 0,
+		"CREATE":  1,
+		"DROP":    2,
+		"ERASE":   3,
+		"FLUSH":   4,
+		"GET":     5,
+		"SET":     6,
+		"DEL":     7,
+		"EXPIRE":  8,
+		"TTL":     9,
+		"HGET":    10,
+		"HSET":    11,
+		"HDEL":    12,
+		"HEXPIRE": 13,
+		"HTTL":    14,
+		"HEXIST":  15,
+		"HLEN":    16,
+		"HKEYS":   17,
+		"HVALS":   18,
+		"HFGET":   19,
+		"HFSET":   20,
+		"HFDEL":   21,
+		"CINIT":   23,
+		"SLIMIT":  24,
+		"GLIMIT":  25,
+		"CGET":    26,
+		"CDEL":    27,
+		"CEXPIRE": 28,
+		"CTTL":    29,
+		"INCRBY":  30,
+		"DECRBY":  31,
+		"PING":    32,
 	}
 )
 
@@ -132,12 +159,12 @@ func (CommandType) EnumDescriptor() ([]byte, []int) {
 
 type Request struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Type          CommandType            `protobuf:"varint,1,opt,name=type,proto3,enum=proto.CommandType" json:"type,omitempty"`
-	Key           string                 `protobuf:"bytes,2,opt,name=key,proto3" json:"key,omitempty"`
-	Value         string                 `protobuf:"bytes,3,opt,name=value,proto3" json:"value,omitempty"`
-	Field         string                 `protobuf:"bytes,4,opt,name=field,proto3" json:"field,omitempty"`
-	NamespaceName string                 `protobuf:"bytes,5,opt,name=namespace_name,json=namespaceName,proto3" json:"namespace_name,omitempty"`
-	TtlSeconds    int64                  `protobuf:"varint,6,opt,name=ttl_seconds,json=ttlSeconds,proto3" json:"ttl_seconds,omitempty"`
+	Command       CommandType            `protobuf:"varint,1,opt,name=command,proto3,enum=proto.CommandType" json:"command,omitempty"`
+	Namespace     string                 `protobuf:"bytes,2,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	Key           string                 `protobuf:"bytes,3,opt,name=key,proto3" json:"key,omitempty"`
+	Value         string                 `protobuf:"bytes,4,opt,name=value,proto3" json:"value,omitempty"`
+	Field         string                 `protobuf:"bytes,5,opt,name=field,proto3" json:"field,omitempty"`
+	Ttl           int64                  `protobuf:"varint,6,opt,name=ttl,proto3" json:"ttl,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -172,11 +199,18 @@ func (*Request) Descriptor() ([]byte, []int) {
 	return file_memap_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Request) GetType() CommandType {
+func (x *Request) GetCommand() CommandType {
 	if x != nil {
-		return x.Type
+		return x.Command
 	}
 	return CommandType_UNKNOWN
+}
+
+func (x *Request) GetNamespace() string {
+	if x != nil {
+		return x.Namespace
+	}
+	return ""
 }
 
 func (x *Request) GetKey() string {
@@ -200,16 +234,9 @@ func (x *Request) GetField() string {
 	return ""
 }
 
-func (x *Request) GetNamespaceName() string {
+func (x *Request) GetTtl() int64 {
 	if x != nil {
-		return x.NamespaceName
-	}
-	return ""
-}
-
-func (x *Request) GetTtlSeconds() int64 {
-	if x != nil {
-		return x.TtlSeconds
+		return x.Ttl
 	}
 	return 0
 }
@@ -217,11 +244,11 @@ func (x *Request) GetTtlSeconds() int64 {
 type Response struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Value         string                 `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+	StringValue   string                 `protobuf:"bytes,2,opt,name=string_value,json=stringValue,proto3" json:"string_value,omitempty"`
 	HashValue     map[string]string      `protobuf:"bytes,3,rep,name=hash_value,json=hashValue,proto3" json:"hash_value,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	ListValues    []string               `protobuf:"bytes,4,rep,name=list_values,json=listValues,proto3" json:"list_values,omitempty"`
 	IntValue      int64                  `protobuf:"varint,5,opt,name=int_value,json=intValue,proto3" json:"int_value,omitempty"`
-	ErrorMessage  string                 `protobuf:"bytes,6,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
+	Error         string                 `protobuf:"bytes,6,opt,name=error,proto3" json:"error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -263,9 +290,9 @@ func (x *Response) GetSuccess() bool {
 	return false
 }
 
-func (x *Response) GetValue() string {
+func (x *Response) GetStringValue() string {
 	if x != nil {
-		return x.Value
+		return x.StringValue
 	}
 	return ""
 }
@@ -291,9 +318,9 @@ func (x *Response) GetIntValue() int64 {
 	return 0
 }
 
-func (x *Response) GetErrorMessage() string {
+func (x *Response) GetError() string {
 	if x != nil {
-		return x.ErrorMessage
+		return x.Error
 	}
 	return ""
 }
@@ -302,31 +329,31 @@ var File_memap_proto protoreflect.FileDescriptor
 
 const file_memap_proto_rawDesc = "" +
 	"\n" +
-	"\vmemap.proto\x12\x05proto\"\xb7\x01\n" +
-	"\aRequest\x12&\n" +
-	"\x04type\x18\x01 \x01(\x0e2\x12.proto.CommandTypeR\x04type\x12\x10\n" +
-	"\x03key\x18\x02 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x03 \x01(\tR\x05value\x12\x14\n" +
-	"\x05field\x18\x04 \x01(\tR\x05field\x12%\n" +
-	"\x0enamespace_name\x18\x05 \x01(\tR\rnamespaceName\x12\x1f\n" +
-	"\vttl_seconds\x18\x06 \x01(\x03R\n" +
-	"ttlSeconds\"\x9a\x02\n" +
+	"\vmemap.proto\x12\x05proto\"\xa5\x01\n" +
+	"\aRequest\x12,\n" +
+	"\acommand\x18\x01 \x01(\x0e2\x12.proto.CommandTypeR\acommand\x12\x1c\n" +
+	"\tnamespace\x18\x02 \x01(\tR\tnamespace\x12\x10\n" +
+	"\x03key\x18\x03 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x04 \x01(\tR\x05value\x12\x14\n" +
+	"\x05field\x18\x05 \x01(\tR\x05field\x12\x10\n" +
+	"\x03ttl\x18\x06 \x01(\x03R\x03ttl\"\x98\x02\n" +
 	"\bResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value\x12=\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12!\n" +
+	"\fstring_value\x18\x02 \x01(\tR\vstringValue\x12=\n" +
 	"\n" +
 	"hash_value\x18\x03 \x03(\v2\x1e.proto.Response.HashValueEntryR\thashValue\x12\x1f\n" +
 	"\vlist_values\x18\x04 \x03(\tR\n" +
 	"listValues\x12\x1b\n" +
-	"\tint_value\x18\x05 \x01(\x03R\bintValue\x12#\n" +
-	"\rerror_message\x18\x06 \x01(\tR\ferrorMessage\x1a<\n" +
+	"\tint_value\x18\x05 \x01(\x03R\bintValue\x12\x14\n" +
+	"\x05error\x18\x06 \x01(\tR\x05error\x1a<\n" +
 	"\x0eHashValueEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01*\x8a\x02\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01*\xe8\x02\n" +
 	"\vCommandType\x12\v\n" +
-	"\aUNKNOWN\x10\x00\x12\r\n" +
-	"\tCREATE_NS\x10\x01\x12\r\n" +
-	"\tDELETE_NS\x10\x02\x12\t\n" +
+	"\aUNKNOWN\x10\x00\x12\n" +
+	"\n" +
+	"\x06CREATE\x10\x01\x12\b\n" +
+	"\x04DROP\x10\x02\x12\t\n" +
 	"\x05ERASE\x10\x03\x12\t\n" +
 	"\x05FLUSH\x10\x04\x12\a\n" +
 	"\x03GET\x10\x05\x12\a\n" +
@@ -348,8 +375,21 @@ const file_memap_proto_rawDesc = "" +
 	"\x05HVALS\x10\x12\x12\t\n" +
 	"\x05HFGET\x10\x13\x12\t\n" +
 	"\x05HFSET\x10\x14\x12\t\n" +
-	"\x05HFDEL\x10\x15\x12\b\n" +
-	"\x04PING\x10\x16B5Z3github.com/memap-project/memap-proto/gen/memapv1/gob\x06proto3"
+	"\x05HFDEL\x10\x15\x12\t\n" +
+	"\x05CINIT\x10\x17\x12\n" +
+	"\n" +
+	"\x06SLIMIT\x10\x18\x12\n" +
+	"\n" +
+	"\x06GLIMIT\x10\x19\x12\b\n" +
+	"\x04CGET\x10\x1a\x12\b\n" +
+	"\x04CDEL\x10\x1b\x12\v\n" +
+	"\aCEXPIRE\x10\x1c\x12\b\n" +
+	"\x04CTTL\x10\x1d\x12\n" +
+	"\n" +
+	"\x06INCRBY\x10\x1e\x12\n" +
+	"\n" +
+	"\x06DECRBY\x10\x1f\x12\b\n" +
+	"\x04PING\x10 B5Z3github.com/memap-project/memap-proto/gen/memapv1/gob\x06proto3"
 
 var (
 	file_memap_proto_rawDescOnce sync.Once
@@ -372,7 +412,7 @@ var file_memap_proto_goTypes = []any{
 	nil,              // 3: proto.Response.HashValueEntry
 }
 var file_memap_proto_depIdxs = []int32{
-	0, // 0: proto.Request.type:type_name -> proto.CommandType
+	0, // 0: proto.Request.command:type_name -> proto.CommandType
 	3, // 1: proto.Response.hash_value:type_name -> proto.Response.HashValueEntry
 	2, // [2:2] is the sub-list for method output_type
 	2, // [2:2] is the sub-list for method input_type

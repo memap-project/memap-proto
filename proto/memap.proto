@@ -7,8 +7,8 @@ option go_package = "github.com/memap-project/memap-proto/gen/memapv1/go";
 enum CommandType {
   UNKNOWN = 0;
 
-  CREATE_NS = 1;
-  DELETE_NS = 2;
+  CREATE = 1;
+  DROP = 2;
   ERASE = 3;
   FLUSH = 4;
 
@@ -32,23 +32,33 @@ enum CommandType {
   HFSET = 20;
   HFDEL = 21;
 
-  PING = 22;
+  CINIT = 23;
+  SLIMIT = 24;
+  GLIMIT = 25;
+  CGET = 26;
+  CDEL = 27;
+  CEXPIRE = 28;
+  CTTL = 29;
+  INCRBY = 30;
+  DECRBY = 31;
+
+  PING = 32;
 }
 
 message Request {
-  CommandType type = 1;
-  string key = 2;
-  string value = 3;
-  string field = 4;
-  string namespace_name = 5;
-  int64 ttl_seconds = 6;
+  CommandType command = 1;
+  string namespace = 2;
+  string key = 3;
+  string value = 4;
+  string field = 5;
+  int64 ttl = 6;
 }
 
 message Response {
   bool success = 1;
-  string value = 2;
+  string string_value = 2;
   map<string, string> hash_value = 3;
   repeated string list_values = 4;
   int64 int_value = 5;
-  string error_message = 6;
+  string error = 6;
 }
