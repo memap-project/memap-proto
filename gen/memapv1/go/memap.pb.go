@@ -165,6 +165,7 @@ type Request struct {
 	Value         string                 `protobuf:"bytes,4,opt,name=value,proto3" json:"value,omitempty"`
 	Field         string                 `protobuf:"bytes,5,opt,name=field,proto3" json:"field,omitempty"`
 	Ttl           int64                  `protobuf:"varint,6,opt,name=ttl,proto3" json:"ttl,omitempty"`
+	Limit         int64                  `protobuf:"varint,7,opt,name=limit,proto3" json:"limit,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -237,6 +238,13 @@ func (x *Request) GetField() string {
 func (x *Request) GetTtl() int64 {
 	if x != nil {
 		return x.Ttl
+	}
+	return 0
+}
+
+func (x *Request) GetLimit() int64 {
+	if x != nil {
+		return x.Limit
 	}
 	return 0
 }
@@ -329,14 +337,15 @@ var File_memap_proto protoreflect.FileDescriptor
 
 const file_memap_proto_rawDesc = "" +
 	"\n" +
-	"\vmemap.proto\x12\x05proto\"\xa5\x01\n" +
+	"\vmemap.proto\x12\x05proto\"\xbb\x01\n" +
 	"\aRequest\x12,\n" +
 	"\acommand\x18\x01 \x01(\x0e2\x12.proto.CommandTypeR\acommand\x12\x1c\n" +
 	"\tnamespace\x18\x02 \x01(\tR\tnamespace\x12\x10\n" +
 	"\x03key\x18\x03 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x04 \x01(\tR\x05value\x12\x14\n" +
 	"\x05field\x18\x05 \x01(\tR\x05field\x12\x10\n" +
-	"\x03ttl\x18\x06 \x01(\x03R\x03ttl\"\x98\x02\n" +
+	"\x03ttl\x18\x06 \x01(\x03R\x03ttl\x12\x14\n" +
+	"\x05limit\x18\a \x01(\x03R\x05limit\"\x98\x02\n" +
 	"\bResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12!\n" +
 	"\fstring_value\x18\x02 \x01(\tR\vstringValue\x12=\n" +

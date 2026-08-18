@@ -52,6 +52,7 @@ message Request {
   string value = 4;
   string field = 5;
   int64 ttl = 6;
+  int64 limit = 7;
 }
 
 message Response {
