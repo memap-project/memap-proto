@@ -47,15 +47,28 @@ const (
 	CommandType_HFSET   CommandType = 20
 	CommandType_HFDEL   CommandType = 21
 	CommandType_CINIT   CommandType = 23
-	CommandType_SLIMIT  CommandType = 24
-	CommandType_GLIMIT  CommandType = 25
+	CommandType_CSLIMIT CommandType = 24
+	CommandType_CGLIMIT CommandType = 25
 	CommandType_CGET    CommandType = 26
 	CommandType_CDEL    CommandType = 27
 	CommandType_CEXPIRE CommandType = 28
 	CommandType_CTTL    CommandType = 29
-	CommandType_INCRBY  CommandType = 30
-	CommandType_DECRBY  CommandType = 31
-	CommandType_PING    CommandType = 32
+	CommandType_CINCRBY CommandType = 30 //
+	CommandType_CDECRBY CommandType = 31 //
+	CommandType_BINIT   CommandType = 32
+	CommandType_BPUSH   CommandType = 33
+	CommandType_BPOP    CommandType = 34
+	CommandType_BAT     CommandType = 35
+	CommandType_BSLICE  CommandType = 36
+	CommandType_BPEEK   CommandType = 37
+	CommandType_BBACK   CommandType = 38
+	CommandType_BCAP    CommandType = 39
+	CommandType_BLEN    CommandType = 40
+	CommandType_BRESET  CommandType = 41
+	CommandType_BDEL    CommandType = 42
+	CommandType_BEXPIRE CommandType = 43
+	CommandType_BTTL    CommandType = 44
+	CommandType_PING    CommandType = 45
 )
 
 // Enum value maps for CommandType.
@@ -84,15 +97,28 @@ var (
 		20: "HFSET",
 		21: "HFDEL",
 		23: "CINIT",
-		24: "SLIMIT",
-		25: "GLIMIT",
+		24: "CSLIMIT",
+		25: "CGLIMIT",
 		26: "CGET",
 		27: "CDEL",
 		28: "CEXPIRE",
 		29: "CTTL",
-		30: "INCRBY",
-		31: "DECRBY",
-		32: "PING",
+		30: "CINCRBY",
+		31: "CDECRBY",
+		32: "BINIT",
+		33: "BPUSH",
+		34: "BPOP",
+		35: "BAT",
+		36: "BSLICE",
+		37: "BPEEK",
+		38: "BBACK",
+		39: "BCAP",
+		40: "BLEN",
+		41: "BRESET",
+		42: "BDEL",
+		43: "BEXPIRE",
+		44: "BTTL",
+		45: "PING",
 	}
 	CommandType_value = map[string]int32{
 		"UNKNOWN": 0,
@@ -118,15 +144,28 @@ var (
 		"HFSET":   20,
 		"HFDEL":   21,
 		"CINIT":   23,
-		"SLIMIT":  24,
-		"GLIMIT":  25,
+		"CSLIMIT": 24,
+		"CGLIMIT": 25,
 		"CGET":    26,
 		"CDEL":    27,
 		"CEXPIRE": 28,
 		"CTTL":    29,
-		"INCRBY":  30,
-		"DECRBY":  31,
-		"PING":    32,
+		"CINCRBY": 30,
+		"CDECRBY": 31,
+		"BINIT":   32,
+		"BPUSH":   33,
+		"BPOP":    34,
+		"BAT":     35,
+		"BSLICE":  36,
+		"BPEEK":   37,
+		"BBACK":   38,
+		"BCAP":    39,
+		"BLEN":    40,
+		"BRESET":  41,
+		"BDEL":    42,
+		"BEXPIRE": 43,
+		"BTTL":    44,
+		"PING":    45,
 	}
 )
 
@@ -160,13 +199,13 @@ func (CommandType) EnumDescriptor() ([]byte, []int) {
 type Request struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Command       CommandType            `protobuf:"varint,1,opt,name=command,proto3,enum=proto.CommandType" json:"command,omitempty"`
-	Namespace     string                 `protobuf:"bytes,2,opt,name=namespace,proto3" json:"namespace,omitempty"`
-	Key           string                 `protobuf:"bytes,3,opt,name=key,proto3" json:"key,omitempty"`
-	StringValue   string                 `protobuf:"bytes,4,opt,name=string_value,json=stringValue,proto3" json:"string_value,omitempty"`
-	IntValue      int64                  `protobuf:"varint,5,opt,name=int_value,json=intValue,proto3" json:"int_value,omitempty"`
-	Field         string                 `protobuf:"bytes,6,opt,name=field,proto3" json:"field,omitempty"`
-	Ttl           int64                  `protobuf:"varint,7,opt,name=ttl,proto3" json:"ttl,omitempty"`
-	Limit         int64                  `protobuf:"varint,8,opt,name=limit,proto3" json:"limit,omitempty"`
+	Namespace     string                 `protobuf:"bytes,2,opt,name=namespace,proto3" json:"namespace,omitempty"`                        // commonly-used
+	Key           string                 `protobuf:"bytes,3,opt,name=key,proto3" json:"key,omitempty"`                                    // commonly-used
+	StringValue   string                 `protobuf:"bytes,4,opt,name=string_value,json=stringValue,proto3" json:"string_value,omitempty"` // commonly-used
+	IntValue      int64                  `protobuf:"varint,5,opt,name=int_value,json=intValue,proto3" json:"int_value,omitempty"`         // for CINCRBY/CDECRBY
+	Field         string                 `protobuf:"bytes,6,opt,name=field,proto3" json:"field,omitempty"`                                // for HFSET/HFGET/HFDEL
+	Ttl           int64                  `protobuf:"varint,7,opt,name=ttl,proto3" json:"ttl,omitempty"`                                   // commonly-used
+	Limit         int64                  `protobuf:"varint,8,opt,name=limit,proto3" json:"limit,omitempty"`                               // for CINIT/CSLIMIT/CGLIMIT and BINIT (capacity)
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -259,12 +298,12 @@ func (x *Request) GetLimit() int64 {
 
 type Response struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	StringValue   string                 `protobuf:"bytes,2,opt,name=string_value,json=stringValue,proto3" json:"string_value,omitempty"`
-	MapValue      map[string]string      `protobuf:"bytes,3,rep,name=map_value,json=mapValue,proto3" json:"map_value,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	SliceValue    []string               `protobuf:"bytes,4,rep,name=slice_value,json=sliceValue,proto3" json:"slice_value,omitempty"`
-	IntValue      int64                  `protobuf:"varint,5,opt,name=int_value,json=intValue,proto3" json:"int_value,omitempty"`
-	Error         string                 `protobuf:"bytes,6,opt,name=error,proto3" json:"error,omitempty"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`                                                                                            // commonly-used
+	StringValue   string                 `protobuf:"bytes,2,opt,name=string_value,json=stringValue,proto3" json:"string_value,omitempty"`                                                                  // commonly-used
+	MapValue      map[string]string      `protobuf:"bytes,3,rep,name=map_value,json=mapValue,proto3" json:"map_value,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // for HGET
+	SliceValue    []string               `protobuf:"bytes,4,rep,name=slice_value,json=sliceValue,proto3" json:"slice_value,omitempty"`                                                                     // for HKEYS/HVALS/BSLICE
+	IntValue      int64                  `protobuf:"varint,5,opt,name=int_value,json=intValue,proto3" json:"int_value,omitempty"`                                                                          // commonly-used
+	Error         string                 `protobuf:"bytes,6,opt,name=error,proto3" json:"error,omitempty"`                                                                                                 // commonly-used
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -365,7 +404,7 @@ const file_memap_proto_rawDesc = "" +
 	"\x05error\x18\x06 \x01(\tR\x05error\x1a;\n" +
 	"\rMapValueEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01*\xe8\x02\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01*\xf8\x03\n" +
 	"\vCommandType\x12\v\n" +
 	"\aUNKNOWN\x10\x00\x12\n" +
 	"\n" +
@@ -393,20 +432,31 @@ const file_memap_proto_rawDesc = "" +
 	"\x05HFGET\x10\x13\x12\t\n" +
 	"\x05HFSET\x10\x14\x12\t\n" +
 	"\x05HFDEL\x10\x15\x12\t\n" +
-	"\x05CINIT\x10\x17\x12\n" +
-	"\n" +
-	"\x06SLIMIT\x10\x18\x12\n" +
-	"\n" +
-	"\x06GLIMIT\x10\x19\x12\b\n" +
+	"\x05CINIT\x10\x17\x12\v\n" +
+	"\aCSLIMIT\x10\x18\x12\v\n" +
+	"\aCGLIMIT\x10\x19\x12\b\n" +
 	"\x04CGET\x10\x1a\x12\b\n" +
 	"\x04CDEL\x10\x1b\x12\v\n" +
 	"\aCEXPIRE\x10\x1c\x12\b\n" +
-	"\x04CTTL\x10\x1d\x12\n" +
+	"\x04CTTL\x10\x1d\x12\v\n" +
+	"\aCINCRBY\x10\x1e\x12\v\n" +
+	"\aCDECRBY\x10\x1f\x12\t\n" +
+	"\x05BINIT\x10 \x12\t\n" +
+	"\x05BPUSH\x10!\x12\b\n" +
+	"\x04BPOP\x10\"\x12\a\n" +
+	"\x03BAT\x10#\x12\n" +
 	"\n" +
-	"\x06INCRBY\x10\x1e\x12\n" +
+	"\x06BSLICE\x10$\x12\t\n" +
+	"\x05BPEEK\x10%\x12\t\n" +
+	"\x05BBACK\x10&\x12\b\n" +
+	"\x04BCAP\x10'\x12\b\n" +
+	"\x04BLEN\x10(\x12\n" +
 	"\n" +
-	"\x06DECRBY\x10\x1f\x12\b\n" +
-	"\x04PING\x10 B5Z3github.com/memap-project/memap-proto/gen/memapv1/gob\x06proto3"
+	"\x06BRESET\x10)\x12\b\n" +
+	"\x04BDEL\x10*\x12\v\n" +
+	"\aBEXPIRE\x10+\x12\b\n" +
+	"\x04BTTL\x10,\x12\b\n" +
+	"\x04PING\x10-B5Z3github.com/memap-project/memap-proto/gen/memapv1/gob\x06proto3"
 
 var (
 	file_memap_proto_rawDescOnce sync.Once

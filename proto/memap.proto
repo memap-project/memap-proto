@@ -27,40 +27,53 @@ enum CommandType {
   HLEN = 16;
   HKEYS = 17;
   HVALS = 18;
-
   HFGET = 19;
   HFSET = 20;
   HFDEL = 21;
 
   CINIT = 23;
-  SLIMIT = 24;
-  GLIMIT = 25;
+  CSLIMIT = 24;
+  CGLIMIT = 25;
   CGET = 26;
   CDEL = 27;
   CEXPIRE = 28;
   CTTL = 29;
-  INCRBY = 30;
-  DECRBY = 31;
+  CINCRBY = 30; //
+  CDECRBY = 31; //
 
-  PING = 32;
+  BINIT = 32;
+  BPUSH = 33;
+  BPOP = 34;
+  BAT = 35;
+  BSLICE = 36;
+  BPEEK = 37;
+  BBACK = 38;
+  BCAP = 39;
+  BLEN = 40;
+  BRESET = 41;
+  BDEL = 42;
+  BEXPIRE = 43;
+  BTTL = 44;
+
+  PING = 45;
 }
 
 message Request {
   CommandType command = 1;
-  string namespace = 2;
-  string key = 3;
-  string string_value = 4;
-  int64 int_value = 5;
-  string field = 6;
-  int64 ttl = 7;
-  int64 limit = 8;
+  string namespace = 2; // commonly-used
+  string key = 3; // commonly-used
+  string string_value = 4; // commonly-used
+  int64 int_value = 5; // for CINCRBY/CDECRBY
+  string field = 6; // for HFSET/HFGET/HFDEL
+  int64 ttl = 7; // commonly-used
+  int64 limit = 8; // for CINIT/CSLIMIT/CGLIMIT and BINIT (capacity)
 }
 
 message Response {
-  bool success = 1;
-  string string_value = 2;
-  map<string, string> map_value = 3;
-  repeated string slice_value = 4;
-  int64 int_value = 5;
-  string error = 6;
+  bool success = 1; // commonly-used
+  string string_value = 2; // commonly-used
+  map<string, string> map_value = 3; // for HGET
+  repeated string slice_value = 4; // for HKEYS/HVALS/BSLICE
+  int64 int_value = 5; // commonly-used
+  string error = 6; // commonly-used
 }
