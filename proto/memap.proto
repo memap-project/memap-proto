@@ -31,31 +31,30 @@ enum CommandType {
   HFSET = 20;
   HFDEL = 21;
 
-  CINIT = 23;
-  CSLIMIT = 24;
-  CGLIMIT = 25;
-  CGET = 26;
-  CDEL = 27;
-  CEXPIRE = 28;
-  CTTL = 29;
-  CINCRBY = 30; //
-  CDECRBY = 31; //
+  CSLIMIT = 22;
+  CGLIMIT = 23;
+  CGET = 24;
+  CDEL = 25;
+  CEXPIRE = 26;
+  CTTL = 27;
+  CINCRBY = 28;
+  CDECRBY = 29;
 
-  BINIT = 32;
-  BPUSH = 33;
-  BPOP = 34;
-  BAT = 35;
-  BSLICE = 36;
-  BPEEK = 37;
-  BBACK = 38;
-  BCAP = 39;
-  BLEN = 40;
-  BRESET = 41;
-  BDEL = 42;
-  BEXPIRE = 43;
-  BTTL = 44;
+  BINIT = 30;
+  BPUSH = 31;
+  BPOP = 32;
+  BAT = 33;
+  BSLICE = 34;
+  BPEEK = 35;
+  BBACK = 36;
+  BCAP = 37;
+  BLEN = 38;
+  BRESET = 39;
+  BDEL = 40;
+  BEXPIRE = 41;
+  BTTL = 42;
 
-  PING = 45;
+  PING = 43;
 }
 
 message Request {
@@ -66,7 +65,7 @@ message Request {
   int64 int_value = 5; // for CINCRBY/CDECRBY
   string field = 6; // for HFSET/HFGET/HFDEL
   int64 ttl = 7; // commonly-used
-  int64 limit = 8; // for CINIT/CSLIMIT/CGLIMIT and BINIT (capacity)
+  int64 limit = 8; // for CSLIMIT/CGLIMIT and BINIT (capacity)
 }
 
 message Response {
