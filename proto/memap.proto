@@ -54,25 +54,33 @@ enum CommandType {
   BEXPIRE = 41;
   BTTL = 42;
 
-  PING = 43;
+  SADD = 43;
+  SREMOVE = 44;
+  SISMEMBER = 45;
+  SCARD = 46;
+  SMEMBERS = 47;
+  SEXPIRE = 48;
+  STTL = 49;
+
+  PING = 50;
 }
 
 message Request {
   CommandType command = 1;
-  string namespace = 2; // commonly-used
-  string key = 3; // commonly-used
-  string string_value = 4; // commonly-used
-  int64 int_value = 5; // for CINCRBY/CDECRBY
-  string field = 6; // for HFSET/HFGET/HFDEL
-  int64 ttl = 7; // commonly-used
-  int64 limit = 8; // for CSLIMIT/CGLIMIT and BINIT (capacity)
+  string namespace = 2;
+  string key = 3;
+  string string_value = 4;
+  int64 int_value = 5;
+  string field = 6;
+  int64 ttl = 7;
+  int64 limit = 8;
 }
 
 message Response {
-  bool success = 1; // commonly-used
-  string string_value = 2; // commonly-used
-  map<string, string> map_value = 3; // for HGET
-  repeated string slice_value = 4; // for HKEYS/HVALS/BSLICE
-  int64 int_value = 5; // commonly-used
-  string error = 6; // commonly-used
+  bool success = 1;
+  string string_value = 2;
+  map<string, string> map_value = 3;
+  repeated string slice_value = 4;
+  int64 int_value = 5;
+  string error = 6;
 }
